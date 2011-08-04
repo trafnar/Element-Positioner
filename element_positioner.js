@@ -1,7 +1,7 @@
-var ElementPositionEditor = function(options){
+var ElementPositioner = function(options){
 	this.options = $.extend({
 		elements : null,
-		cssPrefix : null
+		cssPrefix : ''
 	},options);
 	
 	this.draggable = null;
@@ -10,7 +10,7 @@ var ElementPositionEditor = function(options){
 		
 };
 
-ElementPositionEditor.prototype.bindActivationKeypress = function(){
+ElementPositioner.prototype.bindActivationKeypress = function(){
   $('body').keypress($.proxy(function(e){
     if(e.charCode == 101){
 			if(this.active){
@@ -22,20 +22,20 @@ ElementPositionEditor.prototype.bindActivationKeypress = function(){
   },this));
 };
 
-ElementPositionEditor.prototype.start = function(){
+ElementPositioner.prototype.start = function(){
 	this.removeClickBindingsFromElements();
 	this.draggable = this.options.elements.draggable({stack : '*'});
 	this.active = true;
 };
 
-ElementPositionEditor.prototype.stop = function(){
+ElementPositioner.prototype.stop = function(){
 	this.restoreClickBindingsToElements();
 	this.draggable.draggable("option","disabled",true);
 	this.active = false;
 	this.dumpCSS();
 };
 
-ElementPositionEditor.prototype.dumpCSS = function(){
+ElementPositioner.prototype.dumpCSS = function(){
 	var styleString = "";
  	this.options.elements.each($.proxy(function(i,e){
  			e = $(e);
@@ -44,10 +44,10 @@ ElementPositionEditor.prototype.dumpCSS = function(){
  	  console.log(styleString);
 };
 
-ElementPositionEditor.prototype.removeClickBindingsFromElements = function(){
+ElementPositioner.prototype.removeClickBindingsFromElements = function(){
 	this.options.elements.unbind('click');
 };
 
-ElementPositionEditor.prototype.restoreClickBindingsToElements = function(){
+ElementPositioner.prototype.restoreClickBindingsToElements = function(){
 	// todo
 };
