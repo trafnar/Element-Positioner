@@ -1,0 +1,12 @@
+Element Positioner
+
+1. Include jQuery
+2. Include element_positioner.js
+3. Instantiate an element positioner:
+  new ElementPositioner({
+    elements : jQuery('.elements_to_be_positioned);
+  });
+4. press "e" on your keyboard
+5. drag elements to where you want them
+6. press "e" again, and check your javascript log for CSS output
+
