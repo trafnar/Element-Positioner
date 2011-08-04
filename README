@@ -1,6 +1,6 @@
 Element Positioner
 
-1. Include jQuery
+1. Include jQuery and jQuery UI
 2. Include element_positioner.js
 3. Instantiate an element positioner:
   new ElementPositioner({
