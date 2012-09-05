@@ -8,6 +8,38 @@
     <script src="element_positioner.js" type="text/javascript"></script>
 
     <style type="text/css">
+
+      #element-positioner-panel
+      {
+        position: absolute !important;
+        z-index:500;
+        top: 50px;
+        right: 50px;
+        width:400px;
+        background-color: #f7f7f7;
+        border:1px solid #bbb;
+        padding:10px;
+        -webkit-box-shadow:20px 20px 35px rgba(0,0,0,.15);
+      }
+
+      #element-positioner-panel .element-positioner-handle{
+        width: 100%;
+        height: 20px;
+        margin-bottom: 10px;
+        cursor:move;
+        background-color: #eee;
+      }
+
+      #element-positioner-panel .element-positioner-result{
+        font-size:10px;
+        font-family: Monaco, Consolas, "Lucida Console", monospace;
+        border:1px solid #bbb;
+        padding:10px;
+        background-color:#fff;
+      }
+
+    </style>
+    <style type="text/css">
       ul{
         list-style-type:none;
       }
@@ -16,20 +48,30 @@
         height:20px;
         background-color:red;
       }
+
+      p.pos{
+        position:absolute;
+      }
+
+      #foo_1 { left: 171px; top: 172.86666870117188px; z-index: 19; }
+      #foo_2 { left: 94px; top: 205.86666870117188px; z-index: 18; }
+      #foo_3 { left: 153px; top: 131.86666870117188px; z-index: 17; }
+
     </style>
 
     <script type="text/javascript">
       $(function(){
-        window.p = new ElementPositioner();
+        window.p = new ElementPositioner($('p'));
+        p.activate();
       });
     </script>
 
   </head>
   <body>
     <h1>Hello World</h1>    
-    <p>This is a paragraph</p>
-    <p>This is a paragraph</p>
-    <p>This is a paragraph</p>
+    <p class="pos" id="foo_1">This is a paragraph</p>
+    <p class="pos" id="foo_2">This is a paragraph</p>
+    <p class="pos" id="foo_3">This is a paragraph</p>
     <ul>
       <li></li>
       <li></li>

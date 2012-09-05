@@ -4,34 +4,55 @@
 
   window.ElementPositioner = (function() {
 
-    function ElementPositioner() {
+    function ElementPositioner(elements) {
+      this.elements = elements;
+      this.destroyControlPanel = __bind(this.destroyControlPanel, this);
+
+      this.createControlPanel = __bind(this.createControlPanel, this);
+
       this.restoreClickBindingsToElements = __bind(this.restoreClickBindingsToElements, this);
 
       this.removeClickBindingsFromElements = __bind(this.removeClickBindingsFromElements, this);
 
       this.displayResult = __bind(this.displayResult, this);
 
+      this.initDraggables = __bind(this.initDraggables, this);
+
       this.deactivate = __bind(this.deactivate, this);
 
       this.activate = __bind(this.activate, this);
-      this.elements = $('p');
+
       this.draggable = null;
       this.active = false;
+      this.controlPanel = this.createControlPanel();
     }
 
     ElementPositioner.prototype.activate = function() {
       this.removeClickBindingsFromElements();
-      this.draggable = this.elements.draggable({
-        stack: '*'
+      this.initDraggables();
+      this.elements.css({
+        cursor: 'move'
       });
-      return this.active = true;
+      this.active = true;
+      return this.displayResult();
     };
 
     ElementPositioner.prototype.deactivate = function() {
       this.restoreClickBindingsToElements();
+      this.destroyControlPanel();
       this.draggable.draggable("option", "disabled", true);
       this.active = false;
+      this.elements.css({
+        cursor: 'inherit'
+      });
       return this.displayResult();
+    };
+
+    ElementPositioner.prototype.initDraggables = function() {
+      return this.draggable = this.elements.draggable({
+        stack: '*',
+        drag: this.displayResult
+      });
     };
 
     ElementPositioner.prototype.displayResult = function() {
@@ -39,12 +60,15 @@
         _this = this;
       styleString = "";
       this.elements.each(function(i, e) {
-        var selector;
+        var left, selector, top, z;
         e = $(e);
         selector = e.attr('id') != null ? "#" + (e.attr('id')) : e.getPath();
-        return styleString += "" + selector + " { left: " + (e.css('left')) + "; top: " + (e.css('top')) + "; z-index: " + (e.css('z-index')) + "; }\n";
+        left = "" + (parseInt(e.css('left'), 10)) + "px";
+        top = "" + (parseInt(e.css('top'), 10)) + "px";
+        z = e.css('z-index');
+        return styleString += "" + selector + " { left: " + left + "; top: " + top + "; z-index: " + z + "; }\n";
       });
-      return console.log(styleString);
+      return this.controlPanel.find('.element-positioner-result').text(styleString);
     };
 
     ElementPositioner.prototype.removeClickBindingsFromElements = function() {
@@ -52,6 +76,30 @@
     };
 
     ElementPositioner.prototype.restoreClickBindingsToElements = function() {};
+
+    ElementPositioner.prototype.createControlPanel = function() {
+      var handle, panel, result, selector,
+        _this = this;
+      panel = $('<div>').attr('id', 'element-positioner-panel');
+      handle = $('<div>').addClass('element-positioner-handle');
+      result = $('<pre>').addClass('element-positioner-result');
+      selector = $('<input>').addClass('element-positioner-selector').change(function(e) {
+        var target;
+        target = $(e.target);
+        _this.deactivate();
+        _this.elements = $(target.val());
+        return _this.activate();
+      });
+      panel.append(handle);
+      panel.append(selector);
+      panel.append(result);
+      panel.draggable({
+        handle: handle
+      });
+      return $('body').append(panel);
+    };
+
+    ElementPositioner.prototype.destroyControlPanel = function() {};
 
     return ElementPositioner;
 
