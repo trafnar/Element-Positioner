@@ -1,20 +1,21 @@
 class window.ElementPositioner
-  constructor : (@elements) ->
+  constructor : () ->
     @draggable = null
     @active = false
-
-  activate : () =>
     @controlPanel = @createControlPanel()
+
+  activate : (elements) =>
+    @elements = elements
     @removeClickBindingsFromElements()
     @initDraggables()
     @elements.css cursor: 'move'
     @active = true
     @displayResult()
 
-  deactivate : () =>
+  deactivate : (closePanel = false) =>
+    @destroyControlPanel() if closePanel
     @restoreClickBindingsToElements()
-    @destroyControlPanel()
-    @draggable.draggable "option", "disabled", true
+    @draggable.draggable("destroy")
     @active = false
     @elements.css cursor: 'inherit'
     @displayResult()
@@ -36,10 +37,11 @@ class window.ElementPositioner
     @controlPanel.find('.element-positioner-result').text styleString
 
   removeClickBindingsFromElements : () =>
-    @elements.unbind('click');
+    @elements.unbind('click')
 
   restoreClickBindingsToElements : () =>
-    # todo
+    @elements.unbind('click') # removes added ones
+    # todo - actually restore
 
   createControlPanel : () =>
     panel = $('<div>').attr('id', 'element-positioner-panel')
@@ -47,9 +49,8 @@ class window.ElementPositioner
     result = $('<pre>').addClass('element-positioner-result')
     selector = $('<input>').addClass('element-positioner-selector').change (e) =>
       target = $(e.target)
-      @deactivate()
-      @elements = $(target.val())
-      @activate()
+      @activate($(target.val()))
+      target.remove()
 
     panel.append handle
     panel.append selector

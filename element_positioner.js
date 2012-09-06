@@ -4,8 +4,7 @@
 
   window.ElementPositioner = (function() {
 
-    function ElementPositioner(elements) {
-      this.elements = elements;
+    function ElementPositioner() {
       this.destroyControlPanel = __bind(this.destroyControlPanel, this);
 
       this.createControlPanel = __bind(this.createControlPanel, this);
@@ -21,13 +20,13 @@
       this.deactivate = __bind(this.deactivate, this);
 
       this.activate = __bind(this.activate, this);
-
       this.draggable = null;
       this.active = false;
+      this.controlPanel = this.createControlPanel();
     }
 
-    ElementPositioner.prototype.activate = function() {
-      this.controlPanel = this.createControlPanel();
+    ElementPositioner.prototype.activate = function(elements) {
+      this.elements = elements;
       this.removeClickBindingsFromElements();
       this.initDraggables();
       this.elements.css({
@@ -37,10 +36,15 @@
       return this.displayResult();
     };
 
-    ElementPositioner.prototype.deactivate = function() {
+    ElementPositioner.prototype.deactivate = function(closePanel) {
+      if (closePanel == null) {
+        closePanel = false;
+      }
+      if (closePanel) {
+        this.destroyControlPanel();
+      }
       this.restoreClickBindingsToElements();
-      this.destroyControlPanel();
-      this.draggable.draggable("option", "disabled", true);
+      this.draggable.draggable("destroy");
       this.active = false;
       this.elements.css({
         cursor: 'inherit'
@@ -75,7 +79,9 @@
       return this.elements.unbind('click');
     };
 
-    ElementPositioner.prototype.restoreClickBindingsToElements = function() {};
+    ElementPositioner.prototype.restoreClickBindingsToElements = function() {
+      return this.elements.unbind('click');
+    };
 
     ElementPositioner.prototype.createControlPanel = function() {
       var handle, panel, result, selector,
@@ -86,9 +92,8 @@
       selector = $('<input>').addClass('element-positioner-selector').change(function(e) {
         var target;
         target = $(e.target);
-        _this.deactivate();
-        _this.elements = $(target.val());
-        return _this.activate();
+        _this.activate($(target.val()));
+        return target.remove();
       });
       panel.append(handle);
       panel.append(selector);

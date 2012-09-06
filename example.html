@@ -40,19 +40,17 @@
 
     </style>
     <style type="text/css">
-      ul{
-        list-style-type:none;
-      }
+      
+      ul{ list-style-type:none; }
+
       ul li{
         width:20px;
         height:20px;
         background-color:red;
       }
 
-      p.pos{
-        position:absolute;
-      }
-      ul li{position:absolute;}
+      p.pos{ position:absolute; }
+      ul li{ position:absolute; }
 
       #foo_1 { left: 115px; top: 129px; z-index: 22; }
       #foo_2 { left: 462px; top: 352px; z-index: 24; }
@@ -66,8 +64,7 @@
 
     <script type="text/javascript">
       $(function(){
-        window.p = new ElementPositioner($('ul li'));
-        p.activate();
+        window.p = new ElementPositioner();
       });
     </script>
 
