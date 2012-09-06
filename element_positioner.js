@@ -67,8 +67,10 @@
         var left, selector, top, z;
         e = $(e);
         selector = e.attr('id') != null ? "#" + (e.attr('id')) : e.getSelector();
-        left = "" + (parseInt(e.css('left'), 10)) + "px";
-        top = "" + (parseInt(e.css('top'), 10)) + "px";
+        left = parseInt(e.css('left'), 10);
+        top = parseInt(e.css('top'), 10);
+        left = isNaN(left) ? 'auto' : "" + left + "px";
+        top = isNaN(top) ? 'auto' : "" + top + "px";
         z = e.css('z-index');
         return styleString += "" + selector + " { left: " + left + "; top: " + top + "; z-index: " + z + "; }\n";
       });
@@ -84,17 +86,33 @@
     };
 
     ElementPositioner.prototype.createControlPanel = function() {
-      var handle, panel, result, selector,
+      var acceptSelector, handle, panel, previewSelector, result, selector, style,
         _this = this;
-      panel = $('<div>').attr('id', 'element-positioner-panel');
-      handle = $('<div>').addClass('element-positioner-handle');
-      result = $('<pre>').addClass('element-positioner-result');
-      selector = $('<input>').addClass('element-positioner-selector').change(function(e) {
+      previewSelector = function(e) {
+        var target, val;
+        target = $(e.target);
+        val = target.val();
+        $('.element-positioner-selected').removeClass('element-positioner-selected');
+        return $(val).addClass('element-positioner-selected');
+      };
+      acceptSelector = function(e) {
         var target;
         target = $(e.target);
         _this.activate($(target.val()));
-        return target.remove();
+        target.remove();
+        return $('.element-positioner-selected').removeClass('element-positioner-selected');
+      };
+      style = $('<style>').attr('type', 'text/css');
+      style.html('.element-positioner-selected{ background-color:yellow; outline:2px solid yellow; opacity:.8}');
+      $('head').append(style);
+      panel = $('<div>').attr('id', 'element-positioner-panel');
+      handle = $('<div>').addClass('element-positioner-handle');
+      result = $('<textarea>').addClass('element-positioner-result').click(function(e) {
+        return $(e.target).select();
       });
+      selector = $('<input>').addClass('element-positioner-selector');
+      selector.change(acceptSelector);
+      selector.keyup(previewSelector);
       panel.append(handle);
       panel.append(selector);
       panel.append(result);

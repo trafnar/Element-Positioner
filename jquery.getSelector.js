@@ -2,12 +2,12 @@
 (function() {
 
   jQuery.fn.getSelector = function() {
-    var draggableRegex, name, node, parent, path, realNode, siblings;
+    var className, draggableRegex, name, node, parent, path, realNode, siblings;
     if (this.length !== 1) {
       throw 'Requires one element.';
     }
     node = this;
-    draggableRegex = /\s(ui-draggable(-dragging)?)/g;
+    draggableRegex = /(\s)?ui-draggable(-dragging)?/g;
     while (this.length) {
       realNode = node[0];
       name = realNode.localName;
@@ -15,10 +15,11 @@
         break;
       }
       name = name.toLowerCase();
+      className = realNode.className.replace(draggableRegex, '');
       if (realNode.id) {
         return "" + name + " #" + realNode.id + (path ? ">" + path : void 0);
-      } else if (realNode.className.replace(draggableRegex, '')) {
-        name += "." + (realNode.className.replace(draggableRegex, '').split(/\s+/).join('.'));
+      } else if (className) {
+        name += "." + (className.split(/\s+/).join('.'));
       }
       parent = node.parent();
       siblings = parent.children(name);

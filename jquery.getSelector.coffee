@@ -3,7 +3,7 @@ jQuery.fn.getSelector = () ->
   throw 'Requires one element.' if this.length !=1
 
   node = this
-  draggableRegex = /\s(ui-draggable(-dragging)?)/g
+  draggableRegex = /(\s)?ui-draggable(-dragging)?/g
 
   while this.length
     realNode = node[0]
@@ -12,10 +12,12 @@ jQuery.fn.getSelector = () ->
 
     name = name.toLowerCase()
 
+    className = realNode.className.replace(draggableRegex, '')
+
     if realNode.id
       return "#{name} ##{realNode.id}#{">#{path}" if path}"
-    else if realNode.className.replace(draggableRegex, '')
-      name += ".#{realNode.className.replace(draggableRegex, '').split(/\s+/).join('.')}"
+    else if className
+      name += ".#{className.split(/\s+/).join('.')}"
 
     parent = node.parent()
     siblings = parent.children(name)
