@@ -4,7 +4,12 @@
 
   window.ElementPositioner = (function() {
 
-    function ElementPositioner() {
+    function ElementPositioner(selector) {
+      if (selector == null) {
+        selector = null;
+      }
+      this.getSelector = __bind(this.getSelector, this);
+
       this.destroyControlPanel = __bind(this.destroyControlPanel, this);
 
       this.createControlPanel = __bind(this.createControlPanel, this);
@@ -20,9 +25,13 @@
       this.deactivate = __bind(this.deactivate, this);
 
       this.activate = __bind(this.activate, this);
+
       this.draggable = null;
       this.active = false;
-      this.controlPanel = this.createControlPanel();
+      this.controlPanel = this.createControlPanel(selector);
+      if (selector != null) {
+        this.activate($(selector));
+      }
     }
 
     ElementPositioner.prototype.activate = function(elements) {
@@ -66,9 +75,11 @@
       this.elements.each(function(i, e) {
         var left, selector, top, z;
         e = $(e);
-        selector = e.attr('id') != null ? "#" + (e.attr('id')) : e.getSelector();
-        left = parseInt(e.css('left'), 10);
-        top = parseInt(e.css('top'), 10);
+        selector = _this.getSelector(e);
+        left = Math.round(parseFloat(e.css('left'), 10));
+        top = Math.round(parseFloat(e.css('top'), 10));
+        left = parseFloat(e.css('left'), 10);
+        top = parseFloat(e.css('top'), 10);
         left = isNaN(left) ? 'auto' : "" + left + "px";
         top = isNaN(top) ? 'auto' : "" + top + "px";
         z = e.css('z-index');
@@ -85,8 +96,8 @@
       return this.elements.unbind('click');
     };
 
-    ElementPositioner.prototype.createControlPanel = function() {
-      var acceptSelector, handle, panel, previewSelector, result, selector, style,
+    ElementPositioner.prototype.createControlPanel = function(selector) {
+      var acceptSelector, handle, panel, previewSelector, result, selectorInput, style,
         _this = this;
       previewSelector = function(e) {
         var target, val;
@@ -110,11 +121,13 @@
       result = $('<textarea>').addClass('element-positioner-result').click(function(e) {
         return $(e.target).select();
       });
-      selector = $('<input>').addClass('element-positioner-selector');
-      selector.change(acceptSelector);
-      selector.keyup(previewSelector);
+      selectorInput = $('<input>').addClass('element-positioner-selector');
       panel.append(handle);
-      panel.append(selector);
+      if (selector == null) {
+        selectorInput.change(acceptSelector);
+        selectorInput.keyup(previewSelector);
+        panel.append(selectorInput);
+      }
       panel.append(result);
       panel.draggable({
         handle: handle
@@ -125,6 +138,36 @@
 
     ElementPositioner.prototype.destroyControlPanel = function() {
       return this.controlPanel.remove();
+    };
+
+    ElementPositioner.prototype.getSelector = function(node) {
+      var className, draggableRegex, name, parent, path, realNode, siblings;
+      if (node.length !== 1) {
+        return false;
+      }
+      draggableRegex = /(\s)?ui-draggable(-dragging)?/g;
+      while (node.length) {
+        realNode = node[0];
+        name = realNode.localName;
+        if (!name) {
+          break;
+        }
+        name = name.toLowerCase();
+        className = realNode.className.replace(draggableRegex, '');
+        if (realNode.id) {
+          return "#" + realNode.id + (path ? '>' + path : '');
+        } else if (className) {
+          name += "." + (className.split(/\s+/).join('.'));
+        }
+        parent = node.parent();
+        siblings = parent.children(name);
+        if (siblings.length > 1) {
+          name += ":nth-child(" + (siblings.index(node) + 1) + ")";
+        }
+        path = "" + name + (path ? '>' + path : '');
+        node = parent;
+      }
+      return path;
     };
 
     return ElementPositioner;

@@ -1,8 +1,10 @@
 class window.ElementPositioner
-  constructor : () ->
+  constructor : (selector = null) ->
     @draggable = null
     @active = false
-    @controlPanel = @createControlPanel()
+    @controlPanel = @createControlPanel(selector)
+    @activate($(selector)) if selector?
+
 
   activate : (elements) =>
     @elements = elements
@@ -29,10 +31,11 @@ class window.ElementPositioner
     styleString = "";
     @elements.each (i,e) =>
       e = $(e)
-      selector = if e.attr('id')? then "##{e.attr('id')}" else e.getSelector()
-      
-      left = parseInt(e.css('left'), 10)
-      top = parseInt(e.css('top'), 10)
+      selector = @getSelector(e)
+      left = Math.round parseFloat(e.css('left'), 10)
+      top = Math.round parseFloat(e.css('top'), 10)
+      left = parseFloat(e.css('left'), 10)
+      top = parseFloat(e.css('top'), 10)
       left = if isNaN(left) then 'auto' else "#{left}px"
       top = if isNaN(top) then 'auto' else "#{top}px"
       z = e.css('z-index')
@@ -47,7 +50,7 @@ class window.ElementPositioner
     @elements.unbind('click') # removes added ones
     # todo - actually restore click events
 
-  createControlPanel : () =>
+  createControlPanel : (selector) =>
 
     previewSelector = (e) =>
       target = $(e.target)
@@ -70,12 +73,13 @@ class window.ElementPositioner
     panel = $('<div>').attr('id', 'element-positioner-panel')
     handle = $('<div>').addClass('element-positioner-handle')
     result = $('<textarea>').addClass('element-positioner-result').click (e) => $(e.target).select()
-    selector = $('<input>').addClass('element-positioner-selector')
+    selectorInput = $('<input>').addClass('element-positioner-selector')
 
-    selector.change acceptSelector
-    selector.keyup previewSelector
     panel.append handle
-    panel.append selector
+    unless selector?
+      selectorInput.change acceptSelector
+      selectorInput.keyup previewSelector
+      panel.append selectorInput
     panel.append result
     panel.draggable handle: handle
     $('body').append panel
@@ -83,4 +87,24 @@ class window.ElementPositioner
 
   destroyControlPanel : () =>
     @controlPanel.remove()
+
+  getSelector : (node) =>
+    return false if node.length !=1
+    draggableRegex = /(\s)?ui-draggable(-dragging)?/g
+    while node.length
+      realNode = node[0]
+      name = realNode.localName
+      break if !name
+      name = name.toLowerCase()
+      className = realNode.className.replace(draggableRegex, '')
+      if realNode.id
+        return "##{realNode.id}#{if path then '>' + path else ''}"
+      else if className
+        name += ".#{className.split(/\s+/).join('.')}"
+      parent = node.parent()
+      siblings = parent.children(name)
+      name += ":nth-child(#{siblings.index(node) + 1})" if siblings.length > 1
+      path = "#{name}#{if path then '>' + path else ''}"
+      node = parent
+    return path
 
