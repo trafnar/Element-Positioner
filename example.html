@@ -4,7 +4,7 @@
     <title>Element Positioner</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js" type="text/javascript"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js" type="text/javascript"></script>
-    <script src="jquery.getpath.js" type="text/javascript"></script>
+    <script src="jquery.getselector.js" type="text/javascript"></script>
     <script src="element_positioner.js" type="text/javascript"></script>
 
     <style type="text/css">
@@ -52,30 +52,35 @@
       p.pos{
         position:absolute;
       }
+      ul li{position:absolute;}
 
-      #foo_1 { left: 171px; top: 172.86666870117188px; z-index: 19; }
-      #foo_2 { left: 94px; top: 205.86666870117188px; z-index: 18; }
-      #foo_3 { left: 153px; top: 131.86666870117188px; z-index: 17; }
+      #foo_1 { left: 115px; top: 129px; z-index: 22; }
+      #foo_2 { left: 462px; top: 352px; z-index: 24; }
+      #foo_3 { left: 161px; top: 94px; z-index: 21; }
 
+      html>body>ul>li.barz { left: 378px; top: 248px; z-index: 22; }
+      html>body>ul>li.ui-draggable:nth-child(2) { left: 378px; top: 206px; z-index: 23; }
+      html>body>ul>li.borz { left: 433px; top: 231px; z-index: 24; }
+      html>body>ul>li.ui-draggable:nth-child(4) { left: 341px; top: 207px; z-index: 21; }      
     </style>
 
     <script type="text/javascript">
       $(function(){
-        window.p = new ElementPositioner($('p'));
+        window.p = new ElementPositioner($('ul li'));
         p.activate();
       });
     </script>
 
   </head>
   <body>
-    <h1>Hello World</h1>    
-    <p class="pos" id="foo_1">This is a paragraph</p>
-    <p class="pos" id="foo_2">This is a paragraph</p>
-    <p class="pos" id="foo_3">This is a paragraph</p>
+    <h1>Hello World</h1>
+    <p class="pos">This is a paragraph</p>
+    <p class="pos">This is a paragraph</p>
+    <p class="pos">This is a paragraph</p>
     <ul>
+      <li class="barz"></li>
       <li></li>
-      <li></li>
-      <li></li>
+      <li class="borz"></li>
       <li></li>
     </ul>
   </body>

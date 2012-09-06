@@ -2,9 +2,9 @@ class window.ElementPositioner
   constructor : (@elements) ->
     @draggable = null
     @active = false
-    @controlPanel = @createControlPanel()
 
   activate : () =>
+    @controlPanel = @createControlPanel()
     @removeClickBindingsFromElements()
     @initDraggables()
     @elements.css cursor: 'move'
@@ -28,7 +28,7 @@ class window.ElementPositioner
     styleString = "";
     @elements.each (i,e) =>
       e = $(e)
-      selector = if e.attr('id')? then "##{e.attr('id')}" else e.getPath()
+      selector = if e.attr('id')? then "##{e.attr('id')}" else e.getSelector()
       left = "#{parseInt(e.css('left'), 10)}px"
       top = "#{parseInt(e.css('top'), 10)}px"
       z = e.css('z-index')
@@ -54,9 +54,14 @@ class window.ElementPositioner
     panel.append handle
     panel.append selector
     panel.append result
+
     panel.draggable handle: handle
+    
     $('body').append panel
 
+    return panel
+
   destroyControlPanel : () =>
+    @controlPanel.remove()
 
 
